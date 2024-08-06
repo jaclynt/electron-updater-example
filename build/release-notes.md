@@ -1,2 +1,3 @@
-Version 0.9.1
-Testing auto update #1
+Version 0.9.6 
+Testing auto update. 
+These are some release notes.

@@ -1,10 +1,10 @@
 // This is free and unencumbered software released into the public domain.
 // See LICENSE for details
 
-const {app, BrowserWindow, Menu} = require('electron');
+const {app, BrowserWindow, Menu, ipcMain} = require('electron');
 const log = require('electron-log');
 const {autoUpdater} = require("electron-updater");
-
+autoUpdater.autoDownload = false;
 //-------------------------------------------------------------------
 // Logging
 //
@@ -77,6 +77,7 @@ autoUpdater.on('checking-for-update', () => {
 })
 autoUpdater.on('update-available', (info) => {
   sendStatusToWindow('Update available.');
+  sendStatusToWindow(info.releaseNotes);
 })
 autoUpdater.on('update-not-available', (info) => {
   sendStatusToWindow('Update not available.');
@@ -92,6 +93,7 @@ autoUpdater.on('download-progress', (progressObj) => {
 })
 autoUpdater.on('update-downloaded', (info) => {
   sendStatusToWindow('Update downloaded');
+  
 });
 app.on('ready', function() {
   // Create the Menu
@@ -114,9 +116,9 @@ app.on('window-all-closed', () => {
 // This will immediately download an update, then install when the
 // app quits.
 //-------------------------------------------------------------------
-app.on('ready', function()  {
+/*app.on('ready', function()  {
   autoUpdater.checkForUpdatesAndNotify();
-});
+});*/
 
 //-------------------------------------------------------------------
 // Auto updates - Option 2 - More control
@@ -129,9 +131,18 @@ app.on('ready', function()  {
 // Uncomment any of the below events to listen for them.  Also,
 // look in the previous section to see them being used.
 //-------------------------------------------------------------------
-// app.on('ready', function()  {
-//   autoUpdater.checkForUpdates();
-// });
+app.on('ready', function()  {
+	autoUpdater.checkForUpdates();
+});
+
+ipcMain.on('download-update', (event, arg) => {
+	autoUpdater.downloadUpdate();
+})
+
+
+ipcMain.on('quit-and-install', (event, arg) => {
+	autoUpdater.quitAndInstall();
+})
 // autoUpdater.on('checking-for-update', () => {
 // })
 // autoUpdater.on('update-available', (info) => {
